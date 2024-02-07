@@ -2,8 +2,13 @@
 
 namespace App\Console;
 
+use App\Mail\LetterMail;
+use App\Models\Letter;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Mail;
 
 class Kernel extends ConsoleKernel
 {
@@ -12,7 +17,15 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->call(function () {
+            $letters = Letter::whereDate('delivery_date', '=', date("Y-m-d"))->get();
+
+            foreach ($letters as $letter){
+                Mail::to($letter->user->email)->send(new LetterMail($letter));
+
+            }
+        })->everyFiveMinutes();
+            //->dailyAt('08:00');
     }
 
     /**
