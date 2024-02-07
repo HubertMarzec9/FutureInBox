@@ -24,8 +24,7 @@ class Kernel extends ConsoleKernel
                 Mail::to($letter->user->email)->send(new LetterMail($letter));
 
             }
-        })->everyFiveMinutes();
-            //->dailyAt('08:00');
+        })->dailyAt('08:00');
     }
 
     /**
